@@ -2,33 +2,71 @@
 <html>
 <head>
     <title>Mobile API Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
+        #out { 
+            margin-top: 20px; 
+            padding: 15px; 
+            background: #fff; 
+            border: 1px solid #ccc; 
+            border-radius: 5px;
+            white-space: pre-wrap; 
+            word-wrap: break-word;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-    <h2>Mobile API Tester</h2>
-    <input type="text" id="num" placeholder="Enter Number">
+    <h2>Mobile API Tester (Fixed)</h2>
+    <input type="text" id="num" placeholder="Enter Number (0301...)">
     <button onclick="testApi()">Check Data</button>
-    <div id="out" style="margin-top:20px; color: blue;"></div>
+    <div id="out">Result yahan nazar aayega...</div>
 
     <script>
         async function testApi() {
             const number = document.getElementById('num').value;
             const output = document.getElementById('out');
-            output.innerText = "Loading...";
+            
+            if(!number) {
+                alert("Pehle number likhein!");
+                return;
+            }
 
-            // AllOrigins Proxy use kar rahe hain taake mobile browser block na kare
-            const url = `https://api.allorigins.win/get?url=${encodeURIComponent('https://simsownersdetails.pk/sd-lookup.php?number=' + number)}`;
+            output.innerText = "Connecting to Server...";
+            output.style.color = "blue";
+
+            // Hum AllOrigins proxy ka use kar rahe hain
+            const target = `https://simsownersdetails.pk/sd-lookup.php?number=${number}`;
+            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(target)}`;
 
             try {
-                const response = await fetch(url);
+                const response = await fetch(proxyUrl);
                 const data = await response.json();
-                const actualData = JSON.parse(data.contents); // Asli data yahan hai
                 
-                output.innerText = JSON.stringify(actualData, null, 2);
-                console.log(actualData);
+                // contents mein asli data hota hai
+                const content = data.contents;
+
+                if (!content) {
+                    throw new Error("Server se khali jawab mila.");
+                }
+
+                // Check karein ke kya yeh JSON hai ya HTML error
+                if (content.trim().startsWith("{") || content.trim().startsWith("[")) {
+                    const actualData = JSON.parse(content);
+                    output.innerText = JSON.stringify(actualData, null, 2);
+                    output.style.color = "green";
+                } else {
+                    // Agar JSON nahi hai toh pura text dikha do (taake hum check kar sakein)
+                    output.innerText = "Website Response (Not JSON):\n\n" + content;
+                    output.style.color = "orange";
+                }
+
             } catch (e) {
-                output.innerText = "Error: " + e.message;
+                output.innerText = "Technical Error: " + e.message + "\n\nMashwara: VPN on karke try karein ya proxy change karein.";
+                output.style.color = "red";
             }
         }
     </script>
