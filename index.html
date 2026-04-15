@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mobile API Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
+</head>
+<body>
+    <h2>Mobile API Tester</h2>
+    <input type="text" id="num" placeholder="Enter Number">
+    <button onclick="testApi()">Check Data</button>
+    <div id="out" style="margin-top:20px; color: blue;"></div>
+
+    <script>
+        async function testApi() {
+            const number = document.getElementById('num').value;
+            const output = document.getElementById('out');
+            output.innerText = "Loading...";
+
+            // AllOrigins Proxy use kar rahe hain taake mobile browser block na kare
+            const url = `https://api.allorigins.win/get?url=${encodeURIComponent('https://simsownersdetails.pk/sd-lookup.php?number=' + number)}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const actualData = JSON.parse(data.contents); // Asli data yahan hai
+                
+                output.innerText = JSON.stringify(actualData, null, 2);
+                console.log(actualData);
+            } catch (e) {
+                output.innerText = "Error: " + e.message;
+            }
+        }
+    </script>
+</body>
+</html>
