@@ -6,69 +6,60 @@
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
-        #out { 
-            margin-top: 20px; 
-            padding: 15px; 
-            background: #fff; 
-            border: 1px solid #ccc; 
-            border-radius: 5px;
-            white-space: pre-wrap; 
-            word-wrap: break-word;
-            color: #333;
-        }
+        body { font-family: sans-serif; padding: 15px; background: #f0f2f5; }
+        .box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 4px; font-weight: bold; }
+        #out { margin-top: 20px; padding: 10px; background: #e9ecef; border-radius: 4px; word-break: break-all; min-height: 40px; }
     </style>
 </head>
 <body>
-    <h2>Mobile API Tester (Fixed)</h2>
-    <input type="text" id="num" placeholder="Enter Number (0301...)">
-    <button onclick="testApi()">Check Data</button>
-    <div id="out">Result yahan nazar aayega...</div>
 
-    <script>
-        async function testApi() {
-            const number = document.getElementById('num').value;
-            const output = document.getElementById('out');
+<div class="box">
+    <h3>Data Tracker (Mobile Fix)</h3>
+    <input type="number" id="num" placeholder="03017544623">
+    <button onclick="testApi()">Check Data Now</button>
+    <div id="out">Status: Waiting for input...</div>
+</div>
+
+<script>
+    async function testApi() {
+        const number = document.getElementById('num').value;
+        const output = document.getElementById('out');
+
+        if(!number) return alert("Number likhein!");
+
+        output.innerText = "🔄 Connecting to Proxy...";
+        output.style.color = "blue";
+
+        // Hum doosri proxy use kar rahe hain (corsproxy.io)
+        const targetUrl = `https://simsownersdetails.pk/sd-lookup.php?number=${number}`;
+        const finalUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+
+        try {
+            const response = await fetch(finalUrl);
             
-            if(!number) {
-                alert("Pehle number likhein!");
-                return;
-            }
+            if (!response.ok) throw new Error("Network response was not ok");
 
-            output.innerText = "Connecting to Server...";
-            output.style.color = "blue";
-
-            // Hum AllOrigins proxy ka use kar rahe hain
-            const target = `https://simsownersdetails.pk/sd-lookup.php?number=${number}`;
-            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(target)}`;
-
+            const text = await response.text();
+            
+            // Check karein ke response JSON hai ya nahi
             try {
-                const response = await fetch(proxyUrl);
-                const data = await response.json();
-                
-                // contents mein asli data hota hai
-                const content = data.contents;
-
-                if (!content) {
-                    throw new Error("Server se khali jawab mila.");
-                }
-
-                // Check karein ke kya yeh JSON hai ya HTML error
-                if (content.trim().startsWith("{") || content.trim().startsWith("[")) {
-                    const actualData = JSON.parse(content);
-                    output.innerText = JSON.stringify(actualData, null, 2);
-                    output.style.color = "green";
-                } else {
-                    // Agar JSON nahi hai toh pura text dikha do (taake hum check kar sakein)
-                    output.innerText = "Website Response (Not JSON):\n\n" + content;
-                    output.style.color = "orange";
-                }
-
+                const data = JSON.parse(text);
+                output.innerText = JSON.stringify(data, null, 2);
+                output.style.color = "green";
             } catch (e) {
-                output.innerText = "Technical Error: " + e.message + "\n\nMashwara: VPN on karke try karein ya proxy change karein.";
-                output.style.color = "red";
+                // Agar JSON nahi hai toh raw text dikhayein
+                output.innerText = "Received Data (Not JSON):\n" + text;
+                output.style.color = "orange";
             }
+
+        } catch (e) {
+            output.innerText = "❌ Connection Failed: " + e.message + "\n\nTip: VPN on karke check karein.";
+            output.style.color = "red";
         }
-    </script>
+    }
+</script>
+
 </body>
 </html>
